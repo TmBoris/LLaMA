@@ -38,39 +38,39 @@ def main(config):
     dataloaders, batch_transforms = get_dataloaders(config, device)
 
     # build model architecture, then print to console
-    # model = instantiate(config.model).to(device)
-    # logger.info(model)
+    model = instantiate(config.model).to(device)
+    logger.info(model)
 
-    # # get function handles of loss and metrics
-    # loss_function = instantiate(config.loss_function).to(device)
-    # metrics = instantiate(config.metrics)
+    # get function handles of loss and metrics
+    loss_function = instantiate(config.loss_function).to(device)
+    metrics = instantiate(config.metrics)
 
-    # # build optimizer, learning rate scheduler
-    # trainable_params = filter(lambda p: p.requires_grad, model.parameters())
-    # optimizer = instantiate(config.optimizer, params=trainable_params)
-    # lr_scheduler = instantiate(config.lr_scheduler, optimizer=optimizer)
+    # build optimizer, learning rate scheduler
+    trainable_params = filter(lambda p: p.requires_grad, model.parameters())
+    optimizer = instantiate(config.optimizer, params=trainable_params)
+    lr_scheduler = instantiate(config.lr_scheduler, optimizer=optimizer)
 
-    # # epoch_len = number of iterations for iteration-based training
-    # # epoch_len = None or len(dataloader) for epoch-based training
-    # epoch_len = config.trainer.get("epoch_len")
+    # epoch_len = number of iterations for iteration-based training
+    # epoch_len = None or len(dataloader) for epoch-based training
+    epoch_len = config.trainer.get("epoch_len")
 
-    # trainer = Trainer(
-    #     model=model,
-    #     criterion=loss_function,
-    #     metrics=metrics,
-    #     optimizer=optimizer,
-    #     lr_scheduler=lr_scheduler,
-    #     config=config,
-    #     device=device,
-    #     dataloaders=dataloaders,
-    #     epoch_len=epoch_len,
-    #     logger=logger,
-    #     writer=writer,
-    #     batch_transforms=batch_transforms,
-    #     skip_oom=config.trainer.get("skip_oom", True),
-    # )
+    trainer = Trainer(
+        model=model,
+        criterion=loss_function,
+        metrics=metrics,
+        optimizer=optimizer,
+        lr_scheduler=lr_scheduler,
+        config=config,
+        device=device,
+        dataloaders=dataloaders,
+        epoch_len=epoch_len,
+        logger=logger,
+        writer=writer,
+        batch_transforms=batch_transforms,
+        skip_oom=config.trainer.get("skip_oom", True),
+    )
 
-    # trainer.train()
+    trainer.train()
 
 
 if __name__ == "__main__":

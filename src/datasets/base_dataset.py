@@ -24,7 +24,7 @@ class BaseDataset(Dataset):
         Get element from the index, preprocess it, and combine it
         into a dict.
         """
-        return torch.load(self._index[ind]['text_path'])
+        return torch.load(self._index[ind]['text_path'], weights_only=True)
 
     def __len__(self):
         """
