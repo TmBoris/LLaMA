@@ -2,8 +2,8 @@ defaults:
   - model: baseline
   - writer: wandb
   - metrics: example
-  - datasets: example
-  - dataloader: example
+  - datasets: onebatchtest
+  - dataloader: onebatchtest
   - transforms: example
   - _self_
 optimizer:

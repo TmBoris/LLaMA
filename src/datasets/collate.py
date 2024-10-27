@@ -1,4 +1,5 @@
 import torch
+from torch.nn.utils.rnn import pad_sequence
 
 
 def collate_fn(dataset_items: list[dict]):
@@ -16,10 +17,9 @@ def collate_fn(dataset_items: list[dict]):
 
     result_batch = {}
 
-    # example of collate_fn
-    result_batch["data_object"] = torch.vstack(
-        [elem["data_object"] for elem in dataset_items]
+    result_batch['lengths'] = [len(x) for x in dataset_items]
+    result_batch['texts'] = pad_sequence(
+        [x for x in dataset_items], batch_first=True
     )
-    result_batch["labels"] = torch.tensor([elem["labels"] for elem in dataset_items])
 
     return result_batch

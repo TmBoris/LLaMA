@@ -7,7 +7,7 @@ class BaselineModel(nn.Module):
     Simple MLP
     """
 
-    def __init__(self, n_feats, n_class, fc_hidden=512):
+    def __init__(self, n_feats, n_class, fc_hidden=256):
         """
         Args:
             n_feats (int): number of input features.
@@ -20,12 +20,10 @@ class BaselineModel(nn.Module):
             # people say it can approximate any function...
             nn.Linear(in_features=n_feats, out_features=fc_hidden),
             nn.ReLU(),
-            nn.Linear(in_features=fc_hidden, out_features=fc_hidden),
-            nn.ReLU(),
             nn.Linear(in_features=fc_hidden, out_features=n_class),
         )
 
-    def forward(self, data_object, **batch):
+    def forward(self, lengths, texts, **batch):
         """
         Model forward method.
 

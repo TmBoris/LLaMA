@@ -1,0 +1,6 @@
+train:
+  _target_: src.datasets.Dataset
+  limit: 1
+val:
+  _target_: src.datasets.Dataset
+  limit: 1
