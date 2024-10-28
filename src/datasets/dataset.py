@@ -45,6 +45,7 @@ class Dataset(BaseDataset):
         save_dir = self._data_dir / part
         save_dir.mkdir(parents=True, exist_ok=True)
         absolut_i = 0
+        buffer = []
         for tok_text in dataset_tok['input_ids']:
             i = 0
             while (start := i * self.seq_len) + self.seq_len <= len(tok_text):
@@ -53,9 +54,12 @@ class Dataset(BaseDataset):
                 absolut_i += 1
             
             assert len(tok_text) - start < self.seq_len
-
-            torch.save(tok_text[start: ], f'{save_dir}/text_{absolut_i}.pt')
-            absolut_i += 1
+            
+            buffer.extend(tok_text[start: ])
+            if len(buffer) >= self.seq_len:
+                torch.save(buffer[: self.seq_len], f'{save_dir}/text_{absolut_i}.pt')
+                absolut_i += 1
+                buffer = buffer[self.seq_len:]
 
 
         index = []
