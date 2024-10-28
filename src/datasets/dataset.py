@@ -14,10 +14,10 @@ tokenizer = AutoTokenizer.from_pretrained('mistralai/Mistral-7B-v0.1')
 
 
 class Dataset(BaseDataset):
-    def __init__(self, seq_len, data_dir=None, *args, **kwargs):
+    def __init__(self, seq_len, dir, n_save, *args, **kwargs):
         self.seq_len = seq_len
-        if data_dir is None:
-            data_dir = ROOT_PATH / "data" / "datasets" / "extrasmall_openwebtext_tok"
+        self.n_save = n_save
+        data_dir = ROOT_PATH / "data" / "datasets" / dir
         self._data_dir = data_dir
         dataset = self._get_or_load_index('train')
         super().__init__(dataset, *args, **kwargs)
@@ -35,8 +35,11 @@ class Dataset(BaseDataset):
         return index
 
     def _create_index(self, part):
-        print('Creating index...')
-        dataset = load_dataset("ashaba1in/small_openwebtext")
+        print('Loading dataset...')
+        dataset = load_dataset("ashaba1in/small_openwebtext")['train']
+        if self.n_save is not None:
+            dataset = dataset.select(range(self.n_save))
+        print('Tokenizing dataset...')
         dataset_tok = dataset.map(self._tokenize_function, batched=True)
 
         save_dir = self._data_dir / part
