@@ -19,7 +19,7 @@ lr_scheduler:
 loss_function:
   _target_: src.loss.CELoss
   vocab_size: 32000
-  seq_len: ${datasets.train.seq_len}
+  seq_len: 256
 trainer:
   log_step: 50
   n_epochs: 5

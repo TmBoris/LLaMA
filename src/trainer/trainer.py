@@ -77,8 +77,11 @@ class Trainer(BaseTrainer):
 
         # logging scheme might be different for different partitions
         if mode == "train":  # the method is called only every self.log_step steps
-            # Log Stuff
+            self._log_predictions(**batch)
             pass
         else:
             # Log Stuff
             pass
+
+    def _log_predictions(self, logits, **batch):
+        pass
