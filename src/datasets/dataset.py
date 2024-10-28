@@ -14,7 +14,8 @@ tokenizer = AutoTokenizer.from_pretrained('mistralai/Mistral-7B-v0.1')
 
 
 class Dataset(BaseDataset):
-    def __init__(self, data_dir=None, *args, **kwargs):
+    def __init__(self, seq_len, data_dir=None, *args, **kwargs):
+        self.seq_len = seq_len
         if data_dir is None:
             data_dir = ROOT_PATH / "data" / "datasets" / "extrasmall_openwebtext_tok"
         self._data_dir = data_dir
@@ -34,6 +35,7 @@ class Dataset(BaseDataset):
         return index
 
     def _create_index(self, part):
+        print('Creating index...')
         dataset = load_dataset("ashaba1in/small_openwebtext")
         dataset_tok = dataset.map(self._tokenize_function, batched=True)
 
@@ -41,12 +43,12 @@ class Dataset(BaseDataset):
         absolut_i = 0
         for tok_text in dataset_tok['input_ids']:
             i = 0
-            while (start := i * 256) + 256 <= len(tok_text):
-                torch.save(tok_text[start: start + 256], f'{save_dir}/text_{absolut_i}.pt')
+            while (start := i * self.seq_len) + self.seq_len <= len(tok_text):
+                torch.save(tok_text[start: start + self.seq_len], f'{save_dir}/text_{absolut_i}.pt')
                 i += 1
                 absolut_i += 1
             
-            assert len(tok_text) - start < 256
+            assert len(tok_text) - start < self.seq_len
 
             torch.save(tok_text[start: ], f'{save_dir}/text_{absolut_i}.pt')
             absolut_i += 1

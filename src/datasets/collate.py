@@ -19,7 +19,7 @@ def collate_fn(dataset_items: list[dict]):
 
     result_batch['lengths'] = torch.tensor([len(x) for x in dataset_items])
     result_batch['texts'] = pad_sequence(
-        [torch.tensor([1] + x + [2], dtype=torch.float32) for x in dataset_items], batch_first=True
+        [torch.tensor([1] + x + [2]) for x in dataset_items], batch_first=True
     )
 
     return result_batch

@@ -1,3 +1,4 @@
 train:
   _target_: src.datasets.Dataset
   limit: 1
+  seq_len: 256
