@@ -43,6 +43,7 @@ class Dataset(BaseDataset):
         dataset_tok = dataset.map(self._tokenize_function, batched=True)
 
         save_dir = self._data_dir / part
+        save_dir.mkdir(parents=True, exist_ok=True)
         absolut_i = 0
         for tok_text in dataset_tok['input_ids']:
             i = 0
@@ -66,5 +67,5 @@ class Dataset(BaseDataset):
             )
         return index
     
-    def _tokenize_function(sample):
-            return tokenizer(sample)
+    def _tokenize_function(self, sample):
+            return tokenizer(sample['text'])

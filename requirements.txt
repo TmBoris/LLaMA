@@ -9,8 +9,6 @@ wandb
 hydra-core
 datasets
 transformers
-ipykernel
-ipywidgets
 xformers
 
 black
