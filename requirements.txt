@@ -1,6 +1,4 @@
-torch
-torchvision
-torchmetrics
+torch==2.4.1
 numpy==1.26.4
 tqdm
 matplotlib
