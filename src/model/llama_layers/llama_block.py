@@ -47,7 +47,7 @@ class RoPEMaskedAttentionHead(nn.Module):
         k_rotated += k * self.sin
 
         attn_bias = xops.LowerTriangularMask()
-        out = xops.memory_efficient_attention(q_rotated, k_rotated, v, attn_bias=attn_bias)
+        out = xops.memory_efficient_attention(q_rotated.to(v.dtype), k_rotated.to(v.dtype), v, attn_bias=attn_bias)
 
         return out
     
