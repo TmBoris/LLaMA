@@ -1,5 +1,5 @@
 train:
   _target_: src.datasets.Dataset
-  seq_len: 255
+  seq_len: 16383
   dir: "small_openwebtext_tok"
   n_save: null # full dataset if None

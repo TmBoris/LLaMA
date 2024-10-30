@@ -9,10 +9,7 @@ logger = logging.getLogger(__name__)
 
 
 class BaseDataset(Dataset):
-
-    def __init__(
-        self, index, limit=None
-    ):
+    def __init__(self, index, limit=None):
         """
         Args:
             dataset: instance of hg datasets.dataset
@@ -24,7 +21,7 @@ class BaseDataset(Dataset):
         Get element from the index, preprocess it, and combine it
         into a dict.
         """
-        return torch.load(self._index[ind]['text_path'], weights_only=True)
+        return torch.load(self._index[ind]["text_path"], weights_only=True)
 
     def __len__(self):
         """

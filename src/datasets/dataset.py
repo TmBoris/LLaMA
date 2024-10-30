@@ -1,16 +1,16 @@
 import json
 import os
-import torch
 
+import torch
+from tqdm import tqdm
+from transformers import AutoTokenizer
+
+from datasets import load_dataset, load_from_disk
 from src.datasets.base_dataset import BaseDataset
 from src.utils.io_utils import ROOT_PATH
-from datasets import load_dataset
-from datasets import load_from_disk
-from transformers import AutoTokenizer
-from tqdm import tqdm
 
 #  huggingface-cli login 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
-tokenizer = AutoTokenizer.from_pretrained('mistralai/Mistral-7B-v0.1')
+tokenizer = AutoTokenizer.from_pretrained("mistralai/Mistral-7B-v0.1")
 
 
 class Dataset(BaseDataset):
@@ -19,7 +19,7 @@ class Dataset(BaseDataset):
         self.n_save = n_save
         data_dir = ROOT_PATH / "data" / "datasets" / dir
         self._data_dir = data_dir
-        dataset = self._get_or_load_index('train')
+        dataset = self._get_or_load_index("train")
         super().__init__(dataset, *args, **kwargs)
 
     def _get_or_load_index(self, part):
@@ -35,41 +35,38 @@ class Dataset(BaseDataset):
         return index
 
     def _create_index(self, part):
-        print('Loading dataset...')
-        dataset = load_dataset("ashaba1in/small_openwebtext")['train']
+        print("Loading dataset...")
+        dataset = load_dataset("ashaba1in/small_openwebtext")["train"]
         if self.n_save is not None:
             dataset = dataset.select(range(self.n_save))
-        print('Tokenizing dataset...')
-        dataset_tok = dataset.map(self._tokenize_function, batched=True)
 
         save_dir = self._data_dir / part
         save_dir.mkdir(parents=True, exist_ok=True)
         absolut_i = 0
         buffer = []
-        for tok_text in dataset_tok['input_ids']:
+        for sample in tqdm(dataset, desc="tokenizing + saving", total=len(dataset)):
+            tok_text = tokenizer(sample["text"])["input_ids"]
             i = 0
             while (start := i * self.seq_len) + self.seq_len <= len(tok_text):
-                torch.save(tok_text[start: start + self.seq_len], f'{save_dir}/text_{absolut_i}.pt')
+                torch.save(
+                    tok_text[start : start + self.seq_len],
+                    f"{save_dir}/text_{absolut_i}.pt",
+                )
                 i += 1
                 absolut_i += 1
-            
-            assert len(tok_text) - start < self.seq_len
-            
-            buffer.extend(tok_text[start: ])
-            if len(buffer) >= self.seq_len:
-                torch.save(buffer[: self.seq_len], f'{save_dir}/text_{absolut_i}.pt')
-                absolut_i += 1
-                buffer = buffer[self.seq_len:]
 
+            assert len(tok_text) - start < self.seq_len
+
+            buffer.extend(tok_text[start:])
+            if len(buffer) >= self.seq_len:
+                torch.save(buffer[: self.seq_len], f"{save_dir}/text_{absolut_i}.pt")
+                absolut_i += 1
+                buffer = buffer[self.seq_len :]
 
         index = []
         for text_path in os.listdir(save_dir):
-            index.append(
-                {
-                    "text_path": str(save_dir / text_path)
-                }
-            )
+            index.append({"text_path": str(save_dir / text_path)})
         return index
-    
+
     def _tokenize_function(self, sample):
-            return tokenizer(sample['text'])
+        return tokenizer(sample["text"])

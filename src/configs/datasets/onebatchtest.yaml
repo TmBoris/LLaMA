@@ -1,6 +1,6 @@
 train:
   _target_: src.datasets.Dataset
-  limit: 1
+  limit: 64
   seq_len: 255
   dir: "extrasmall_openwebtext_tok"
   n_save: 100 # full dataset if None

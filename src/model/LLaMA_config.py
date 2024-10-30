@@ -1,5 +1,6 @@
-from transformers import PretrainedConfig
 from typing import List
+
+from transformers import PretrainedConfig
 
 
 class LLaMA_config(PretrainedConfig):
@@ -18,5 +19,4 @@ class LLaMA_config(PretrainedConfig):
         avg_down: bool = False,
         **kwargs,
     ):
-        
         super().__init__(**kwargs)

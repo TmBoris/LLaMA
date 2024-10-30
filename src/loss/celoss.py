@@ -1,6 +1,7 @@
 import torch
-from torch import nn
 import torch.nn.functional as F
+from torch import nn
+
 
 class CELoss(nn.Module):
     """
@@ -21,5 +22,7 @@ class CELoss(nn.Module):
         """
 
         return {
-            "loss": F.cross_entropy(logits.view(-1, self.vocab_size), texts[:, 1:].view(-1))
+            "loss": F.cross_entropy(
+                logits.view(-1, self.vocab_size), texts[:, 1:].flatten()
+            )
         }

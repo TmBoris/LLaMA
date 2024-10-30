@@ -68,7 +68,7 @@ def main(config):
         writer=writer,
         batch_transforms=batch_transforms,
         skip_oom=config.trainer.get("skip_oom", True),
-        amp=config.trainer.get("amp", False)
+        amp=config.trainer.get("amp", False),
     )
 
     trainer.train()

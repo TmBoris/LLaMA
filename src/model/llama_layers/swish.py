@@ -10,7 +10,6 @@ class SwiGLU(nn.Module):
         self.linear2 = nn.Linear(n_dim, inter_dim)
         self.silu = nn.SiLU()
 
-
     def forward(self, x):
         b, length, n_dim = x.shape
 

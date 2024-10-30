@@ -1,39 +1,36 @@
 import torch
 from torch import nn
+
 from .llama_layers.llama_block import LlamaBlock
 
 
 class LLaMA(nn.Module):
     def __init__(
-            self,
-            vocab_size,
-            d_model,
-            n_heads,
-            seq_len,
-            inter_dim,
-            n_layers,
-            device
-        ):
+        self, vocab_size, d_model, n_heads, seq_len, inter_dim, n_layers, device
+    ):
         super().__init__()
 
-        if device == 'auto':
-            device = 'cuda' if torch.cuda.is_available() else 'cpu'
+        if device == "auto":
+            device = "cuda" if torch.cuda.is_available() else "cpu"
 
         self.embeds = nn.Embedding(vocab_size, d_model)
-        
+
         self.blocks = nn.ModuleList(
-            [LlamaBlock(n_heads, d_model, seq_len, inter_dim, device) for i in range(n_layers)]
+            [
+                LlamaBlock(n_heads, d_model, seq_len, inter_dim, device)
+                for i in range(n_layers)
+            ]
         )
-        
+
         self.rms = nn.RMSNorm([seq_len, d_model])
         self.linear = nn.Linear(d_model, vocab_size)
 
-        print('model initialized')
+        print("model initialized")
 
-    def forward(self, lengths, texts, **batch):
+    def forward(self, texts, **batch):
         # b, length = texts.shape
 
-        x = self.embeds(texts[:, :-1]) # cut eos
+        x = self.embeds(texts[:, :-1])  # cut eos
 
         for block in self.blocks:
             x = block(x)

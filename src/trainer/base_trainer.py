@@ -2,13 +2,13 @@ from abc import abstractmethod
 
 import torch
 from numpy import inf
+from torch import GradScaler
 from torch.nn.utils import clip_grad_norm_
 from tqdm.auto import tqdm
 
 from src.datasets.data_utils import inf_loop
 from src.metrics.tracker import MetricTracker
 from src.utils.io_utils import ROOT_PATH
-from torch import GradScaler
 
 
 class BaseTrainer:
@@ -31,7 +31,7 @@ class BaseTrainer:
         epoch_len=None,
         skip_oom=True,
         batch_transforms=None,
-        amp=False
+        amp=False,
     ):
         """
         Args:
@@ -144,7 +144,7 @@ class BaseTrainer:
 
         if config.trainer.get("from_pretrained") is not None:
             self._from_pretrained(config.trainer.get("from_pretrained"))
-        
+
         self.scaler = GradScaler(device=self.device, enabled=self.amp)
 
     def train(self):

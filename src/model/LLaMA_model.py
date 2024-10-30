@@ -1,10 +1,10 @@
 from torch import nn
 from transformers import PreTrainedModel
-from .LLaMA_config import LLaMA_config
+
 from .LLaMA import LLaMA
+from .LLaMA_config import LLaMA_config
 
 
-    
 class LLaMAModel(PreTrainedModel):
     config_class = LLaMA_config
 
