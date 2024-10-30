@@ -20,9 +20,9 @@ class CELoss(nn.Module):
         Returns:
             losses (dict): dict containing calculated loss functions.
         """
-
+        k_nans_enemy = 1e-8
         return {
             "loss": F.cross_entropy(
-                logits.view(-1, self.vocab_size), texts[:, 1:].flatten()
+                logits.view(-1, self.vocab_size) + k_nans_enemy, texts[:, 1:].flatten()
             )
         }
