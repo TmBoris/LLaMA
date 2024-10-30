@@ -1,8 +1,9 @@
+import gc
 from abc import abstractmethod
 
 import torch
 from numpy import inf
-from torch import GradScaler
+from torch import GradScaler, nn
 from torch.nn.utils import clip_grad_norm_
 from tqdm.auto import tqdm
 from transformers import AutoTokenizer
@@ -70,7 +71,7 @@ class BaseTrainer:
         self.logger = logger
         self.log_step = config.trainer.get("log_step", 50)
 
-        self.model = model
+        self.model = nn.DataParallel(model)
         self.criterion = criterion
         self.optimizer = optimizer
         self.lr_scheduler = lr_scheduler
@@ -220,6 +221,7 @@ class BaseTrainer:
             except torch.cuda.OutOfMemoryError as e:
                 if self.skip_oom:
                     self.logger.warning("OOM on batch. Skipping batch.")
+                    gc.collect()
                     torch.cuda.empty_cache()  # free some memory
                     continue
                 else:

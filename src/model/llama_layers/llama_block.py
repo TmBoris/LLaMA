@@ -17,7 +17,10 @@ class RoPEMaskedAttentionHead(nn.Module):
         self.w_k = nn.Linear(d_model, d_head)
         self.w_v = nn.Linear(d_model, d_head)
 
-        self.sin, self.cos = self._get_rotary_vectors()
+        sin, cos = self._get_rotary_vectors()
+
+        self.register_buffer("sin", sin)
+        self.register_buffer("cos", cos)
 
     def _get_rotary_vectors(self):
         sin = torch.zeros((self.seq_len, self.d_head))
@@ -31,7 +34,8 @@ class RoPEMaskedAttentionHead(nn.Module):
                 cos[position, 2 * i + 1] = np.cos(m_theta)
                 sin[position, 2 * i] = -np.sin(m_theta)
                 sin[position, 2 * i + 1] = np.cos(m_theta)
-        return sin.to(self.device), cos.to(self.device)
+
+        return sin, cos
 
     def forward(self, x):
         b, seq_len, d_head = x.shape

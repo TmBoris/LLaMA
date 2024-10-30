@@ -37,6 +37,6 @@ def collate_fn(dataset_items: list[dict], expected_seq_len):
         .view(-1, expected_seq_len + 1)
     )
 
-    print('result_batch["texts"].shape', result_batch["texts"].shape)
+    # print('result_batch["texts"].shape', result_batch["texts"].shape)
 
     return result_batch
