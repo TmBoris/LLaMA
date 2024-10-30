@@ -10,7 +10,6 @@ from src.datasets.base_dataset import BaseDataset
 from src.utils.io_utils import ROOT_PATH
 
 #  huggingface-cli login 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
-tokenizer = AutoTokenizer.from_pretrained("mistralai/Mistral-7B-v0.1")
 
 
 class Dataset(BaseDataset):
@@ -19,6 +18,8 @@ class Dataset(BaseDataset):
         self.n_save = n_save
         data_dir = ROOT_PATH / "data" / "datasets" / dir
         self._data_dir = data_dir
+        self.tokenizer = AutoTokenizer.from_pretrained("mistralai/Mistral-7B-v0.1")
+
         dataset = self._get_or_load_index("train")
         super().__init__(dataset, *args, **kwargs)
 
@@ -45,11 +46,13 @@ class Dataset(BaseDataset):
         absolut_i = 0
         buffer = []
         for sample in tqdm(dataset, desc="tokenizing + saving", total=len(dataset)):
-            tok_text = tokenizer(sample["text"])["input_ids"]
+            tok_text = self.tokenizer(sample["text"])["input_ids"]
             i = 0
             while (start := i * self.seq_len) + self.seq_len <= len(tok_text):
                 torch.save(
-                    tok_text[start : start + self.seq_len],
+                    torch.tensor(tok_text[start : start + self.seq_len]).to(
+                        torch.int16
+                    ),
                     f"{save_dir}/text_{absolut_i}.pt",
                 )
                 i += 1
@@ -59,7 +62,10 @@ class Dataset(BaseDataset):
 
             buffer.extend(tok_text[start:])
             if len(buffer) >= self.seq_len:
-                torch.save(buffer[: self.seq_len], f"{save_dir}/text_{absolut_i}.pt")
+                torch.save(
+                    torch.tensor(buffer[: self.seq_len]).to(torch.int16),
+                    f"{save_dir}/text_{absolut_i}.pt",
+                )
                 absolut_i += 1
                 buffer = buffer[self.seq_len :]
 
@@ -68,5 +74,5 @@ class Dataset(BaseDataset):
             index.append({"text_path": str(save_dir / text_path)})
         return index
 
-    def _tokenize_function(self, sample):
-        return tokenizer(sample["text"])
+    # def _tokenize_function(self, sample):
+    #     return tokenizer(sample["text"])
