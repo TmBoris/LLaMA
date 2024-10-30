@@ -20,19 +20,23 @@ def collate_fn(dataset_items: list[dict], expected_seq_len):
     result_batch = {}
 
     result_batch["lengths"] = torch.tensor([len(x) for x in dataset_items])
-    result_batch["texts"] = pad_sequence(
-        [
-            torch.cat(
-                [
-                    torch.cat((tensor([1]), t, tensor([2])))
-                    for t in x.view(-1, expected_seq_len - 1)
-                ]
-            )
-            for x in dataset_items
-        ],
-        batch_first=True,
-    ).squeeze(0)
+    result_batch["texts"] = (
+        pad_sequence(
+            [
+                torch.stack(
+                    [
+                        torch.cat((tensor([1]), t, tensor([2])))
+                        for t in x.view(-1, expected_seq_len - 1)
+                    ]
+                )
+                for x in dataset_items
+            ],
+            batch_first=True,
+        )
+        .squeeze(0)
+        .view(-1, expected_seq_len + 1)
+    )
 
-    # print('result_batch["texts"].shape', result_batch["texts"].shape)
+    print('result_batch["texts"].shape', result_batch["texts"].shape)
 
     return result_batch
