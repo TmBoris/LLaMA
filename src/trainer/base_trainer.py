@@ -5,6 +5,7 @@ from numpy import inf
 from torch import GradScaler
 from torch.nn.utils import clip_grad_norm_
 from tqdm.auto import tqdm
+from transformers import AutoTokenizer
 
 from src.datasets.data_utils import inf_loop
 from src.metrics.tracker import MetricTracker
@@ -117,6 +118,7 @@ class BaseTrainer:
 
         # setup visualization writer instance
         self.writer = writer
+        self.tokenizer = AutoTokenizer.from_pretrained("mistralai/Mistral-7B-v0.1")
 
         # define metrics
         self.metrics = metrics

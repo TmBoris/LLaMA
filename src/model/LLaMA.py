@@ -6,7 +6,15 @@ from .llama_layers.llama_block import LlamaBlock
 
 class LLaMA(nn.Module):
     def __init__(
-        self, vocab_size, d_model, n_heads, seq_len, inter_dim, n_layers, device
+        self,
+        vocab_size,
+        d_model,
+        n_heads,
+        seq_len,
+        inter_dim,
+        n_layers,
+        expected_seq_len,
+        device,
     ):
         super().__init__()
 
@@ -17,8 +25,10 @@ class LLaMA(nn.Module):
 
         self.blocks = nn.ModuleList(
             [
-                LlamaBlock(n_heads, d_model, seq_len, inter_dim, device)
-                for i in range(n_layers)
+                LlamaBlock(
+                    n_heads, d_model, seq_len, inter_dim, expected_seq_len, device
+                )
+                for _ in range(n_layers)
             ]
         )
 

@@ -1,6 +1,5 @@
 import torch
 from torch import autocast
-from transformers import AutoTokenizer
 
 from src.metrics.tracker import MetricTracker
 from src.trainer.base_trainer import BaseTrainer
@@ -87,11 +86,10 @@ class Trainer(BaseTrainer):
             pass
 
     def _log_predictions(self, logits, texts, **batch):
-        tokenizer = AutoTokenizer.from_pretrained("mistralai/Mistral-7B-v0.1")
-        text = tokenizer.decode(
+        text = self.tokenizer.decode(
             torch.argmax(logits[0], dim=-1), skip_special_tokens=True
         )
         self.writer.add_text("prediction", text)
         self.writer.add_text(
-            "target", tokenizer.decode(texts[0, 1:], skip_special_tokens=True)
+            "target", self.tokenizer.decode(texts[0, 1:], skip_special_tokens=True)
         )

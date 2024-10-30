@@ -7,23 +7,26 @@ from .swish import SwiGLU
 
 
 class RoPEMaskedAttentionHead(nn.Module):
-    def __init__(self, d_model, d_head, seq_len, device):
+    def __init__(self, d_model, d_head, seq_len, expected_seq_len, device):
         super().__init__()
         self.device = device
+        self.seq_len = seq_len
+        self.d_head = d_head
+        self.expected_seq_len = expected_seq_len
         self.w_q = nn.Linear(d_model, d_head)
         self.w_k = nn.Linear(d_model, d_head)
         self.w_v = nn.Linear(d_model, d_head)
 
-        self.sin, self.cos = self._get_rotary_vectors(seq_len, d_head)
+        self.sin, self.cos = self._get_rotary_vectors()
 
-    def _get_rotary_vectors(self, seq_len, d_head):
-        sin = torch.zeros((seq_len, d_head), requires_grad=False)
-        cos = torch.zeros((seq_len, d_head), requires_grad=False)
+    def _get_rotary_vectors(self):
+        sin = torch.zeros((self.seq_len, self.d_head))
+        cos = torch.zeros((self.seq_len, self.d_head))
 
-        for position in range(seq_len):
-            for i in range(d_head // 2):
-                theta = 10000.0 ** (-2.0 * (i - 1) / d_head)
-                m_theta = position * theta
+        for position in range(self.seq_len):
+            for i in range(self.d_head // 2):
+                theta = 10000.0 ** (-2.0 * (i - 1) / self.d_head)
+                m_theta = position * theta * self.seq_len // self.expected_seq_len
                 cos[position, 2 * i] = np.cos(m_theta)
                 cos[position, 2 * i + 1] = np.cos(m_theta)
                 sin[position, 2 * i] = -np.sin(m_theta)
@@ -54,13 +57,15 @@ class RoPEMaskedAttentionHead(nn.Module):
 
 
 class RoPEMaskedMultiheadAttention(nn.Module):
-    def __init__(self, n_heads, d_model, seq_len, device):
+    def __init__(self, n_heads, d_model, seq_len, expected_seq_len, device):
         super().__init__()
 
         d_head = d_model // n_heads
         self.heads = nn.ModuleList(
             [
-                RoPEMaskedAttentionHead(d_model, d_head, seq_len, device)
+                RoPEMaskedAttentionHead(
+                    d_model, d_head, seq_len, expected_seq_len, device
+                )
                 for _ in range(n_heads)
             ]
         )
@@ -75,11 +80,13 @@ class RoPEMaskedMultiheadAttention(nn.Module):
 
 
 class LlamaBlock(nn.Module):
-    def __init__(self, n_heads, d_model, seq_len, inter_dim, device):
+    def __init__(self, n_heads, d_model, seq_len, inter_dim, expected_seq_len, device):
         super().__init__()
 
         self.rms = nn.RMSNorm([seq_len, d_model])
-        self.attention = RoPEMaskedMultiheadAttention(n_heads, d_model, seq_len, device)
+        self.attention = RoPEMaskedMultiheadAttention(
+            n_heads, d_model, seq_len, expected_seq_len, device
+        )
 
         self.feedforward = nn.Sequential(
             SwiGLU(d_model, inter_dim),

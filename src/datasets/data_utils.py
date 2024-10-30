@@ -79,8 +79,8 @@ def get_dataloaders(config, device):
         partition_dataloader = instantiate(
             config.dataloader,
             dataset=dataset,
-            collate_fn=collate_fn,
-            # drop_last=(dataset_partition == "train"),
+            collate_fn=lambda batch: collate_fn(batch, config.model.expected_seq_len),
+            drop_last=(dataset_partition == "train"),
             shuffle=(dataset_partition == "train"),
             worker_init_fn=set_worker_seed,
         )

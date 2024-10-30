@@ -2,8 +2,8 @@ defaults:
   - model: llama
   - writer: wandb
   - metrics: example
-  - datasets: onebatchtest
-  - dataloader: onebatchtest
+  - datasets: example
+  - dataloader: example
   - transforms: example
   - _self_
 optimizer:
@@ -22,8 +22,8 @@ loss_function:
   seq_len: 256
 trainer:
   log_step: 50
-  n_epochs: 5
-  epoch_len: 50
+  n_epochs: 303
+  epoch_len: 250
   device_tensors: ["texts"] # which tensors should be on device (ex. GPU)
   resume_from: null # null or path to the checkpoint dir with *.pth and config.yaml
   device: auto # device name or "auto"
