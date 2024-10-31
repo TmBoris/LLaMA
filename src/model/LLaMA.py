@@ -14,19 +14,15 @@ class LLaMA(nn.Module):
         inter_dim,
         n_layers,
         expected_seq_len,
-        device,
     ):
         super().__init__()
-
-        if device == "auto":
-            device = "cuda" if torch.cuda.is_available() else "cpu"
 
         self.embeds = nn.Embedding(vocab_size, d_model)
 
         self.blocks = nn.ModuleList(
             [
                 LlamaBlock(
-                    n_heads, d_model, seq_len, inter_dim, expected_seq_len, device
+                    n_heads, d_model, seq_len, inter_dim, expected_seq_len
                 )
                 for _ in range(n_layers)
             ]

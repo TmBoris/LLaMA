@@ -6,4 +6,3 @@ seq_len: ${loss_function.seq_len}
 expected_seq_len: 256 # set to 1024 for ft
 inter_dim: 1024
 n_layers: 16
-device: ${trainer.device}

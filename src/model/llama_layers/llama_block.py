@@ -8,9 +8,8 @@ from .swish import SwiGLU
 
 
 class RoPEMaskedAttentionHead(nn.Module):
-    def __init__(self, d_model, d_head, seq_len, expected_seq_len, device):
+    def __init__(self, d_model, d_head, seq_len, expected_seq_len):
         super().__init__()
-        self.device = device
         self.seq_len = seq_len
         self.d_head = d_head
         self.expected_seq_len = expected_seq_len
@@ -64,14 +63,14 @@ class RoPEMaskedAttentionHead(nn.Module):
 
 
 class RoPEMaskedMultiheadAttention(nn.Module):
-    def __init__(self, n_heads, d_model, seq_len, expected_seq_len, device):
+    def __init__(self, n_heads, d_model, seq_len, expected_seq_len):
         super().__init__()
 
         d_head = d_model // n_heads
         self.heads = nn.ModuleList(
             [
                 RoPEMaskedAttentionHead(
-                    d_model, d_head, seq_len, expected_seq_len, device
+                    d_model, d_head, seq_len, expected_seq_len
                 )
                 for _ in range(n_heads)
             ]
@@ -87,12 +86,12 @@ class RoPEMaskedMultiheadAttention(nn.Module):
 
 
 class LlamaBlock(nn.Module):
-    def __init__(self, n_heads, d_model, seq_len, inter_dim, expected_seq_len, device):
+    def __init__(self, n_heads, d_model, seq_len, inter_dim, expected_seq_len):
         super().__init__()
 
         self.rms = nn.RMSNorm([seq_len, d_model])
         self.attention = RoPEMaskedMultiheadAttention(
-            n_heads, d_model, seq_len, expected_seq_len, device
+            n_heads, d_model, seq_len, expected_seq_len
         )
 
         self.feedforward = nn.Sequential(
