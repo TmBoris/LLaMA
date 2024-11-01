@@ -35,7 +35,6 @@ class Trainer(BaseTrainer):
         metric_funcs = self.metrics["inference"]
         if self.is_train:
             metric_funcs = self.metrics["train"]
-            self.optimizer.zero_grad()
 
         with autocast(
             device_type=self.device, enabled=self.amp, dtype=self.autocast_dtype
@@ -46,7 +45,7 @@ class Trainer(BaseTrainer):
             all_losses = self.criterion(**batch)
             batch.update(all_losses)
 
-            batch['loss'] = batch['loss'] / self.iters_to_accumulate
+            batch["loss"] = batch["loss"] / self.iters_to_accumulate
 
         if self.is_train:
             self.scaler.scale(
@@ -58,6 +57,10 @@ class Trainer(BaseTrainer):
                 self._clip_grad_norm()
                 self.scaler.step(self.optimizer)
                 self.scaler.update()
+
+                self.train_metrics.update("grad_norm", self._get_grad_norm())
+
+                self.optimizer.zero_grad()
 
             if self.lr_scheduler is not None:
                 self.lr_scheduler.step()

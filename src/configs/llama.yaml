@@ -37,4 +37,3 @@ trainer:
   seed: 1
   amp: True
   autocast_dtype: bfloat16
-

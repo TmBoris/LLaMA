@@ -35,7 +35,7 @@ class BaseTrainer:
         batch_transforms=None,
         amp=False,
         autocast_dtype="float16",
-        iters_to_accumulate=1
+        iters_to_accumulate=1,
     ):
         """
         Args:
@@ -234,14 +234,12 @@ class BaseTrainer:
                 else:
                     raise e
 
-            self.train_metrics.update("grad_norm", self._get_grad_norm())
-
             # log current results
             if batch_idx % self.log_step == 0:
                 self.writer.set_step((epoch - 1) * self.epoch_len + batch_idx)
                 self.logger.debug(
                     "Train Epoch: {} {} Loss: {:.6f}".format(
-                        epoch, self._progress(batch_idx), batch["loss"].item()
+                        epoch, self._progress(batch_idx), batch["loss"].item() * self.iters_to_accumulate
                     )
                 )
                 self.writer.add_scalar(
