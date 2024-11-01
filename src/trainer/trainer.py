@@ -10,7 +10,7 @@ class Trainer(BaseTrainer):
     Trainer class. Defines the logic of batch logging and processing.
     """
 
-    def process_batch(self, batch, metrics: MetricTracker):
+    def process_batch(self, batch_idx, batch, metrics: MetricTracker):
         """
         Run batch through the model, compute metrics, compute loss,
         and do training step (during training stage).
@@ -46,14 +46,19 @@ class Trainer(BaseTrainer):
             all_losses = self.criterion(**batch)
             batch.update(all_losses)
 
+            batch['loss'] = batch['loss'] / self.iters_to_accumulate
+
         if self.is_train:
             self.scaler.scale(
                 batch["loss"]
             ).backward()  # sum of all losses is always called loss
-            self.scaler.unscale_(self.optimizer)
-            self._clip_grad_norm()
-            self.scaler.step(self.optimizer)
-            self.scaler.update()
+
+            if (batch_idx + 1) % self.iters_to_accumulate == 0:
+                self.scaler.unscale_(self.optimizer)
+                self._clip_grad_norm()
+                self.scaler.step(self.optimizer)
+                self.scaler.update()
+
             if self.lr_scheduler is not None:
                 self.lr_scheduler.step()
 

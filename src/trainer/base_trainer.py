@@ -35,6 +35,7 @@ class BaseTrainer:
         batch_transforms=None,
         amp=False,
         autocast_dtype="float16",
+        iters_to_accumulate=1
     ):
         """
         Args:
@@ -65,6 +66,7 @@ class BaseTrainer:
         self.autocast_dtype = (
             torch.bfloat16 if autocast_dtype == "bfloat16" else torch.float16
         )
+        self.iters_to_accumulate = iters_to_accumulate
 
         self.config = config
         self.cfg_trainer = self.config.trainer
@@ -219,6 +221,7 @@ class BaseTrainer:
         ):
             try:
                 batch = self.process_batch(
+                    batch_idx,
                     batch,
                     metrics=self.train_metrics,
                 )
