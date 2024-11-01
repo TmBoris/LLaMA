@@ -69,6 +69,8 @@ def main(config):
         batch_transforms=batch_transforms,
         skip_oom=config.trainer.get("skip_oom", True),
         amp=config.trainer.get("amp", False),
+        autocast_dtype=config.trainer.get("autocast_dtype", 'bfloat16')
+
     )
 
     trainer.train()

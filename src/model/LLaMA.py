@@ -21,9 +21,7 @@ class LLaMA(nn.Module):
 
         self.blocks = nn.ModuleList(
             [
-                LlamaBlock(
-                    n_heads, d_model, seq_len, inter_dim, expected_seq_len
-                )
+                LlamaBlock(n_heads, d_model, seq_len, inter_dim, expected_seq_len)
                 for _ in range(n_layers)
             ]
         )

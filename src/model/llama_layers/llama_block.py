@@ -69,9 +69,7 @@ class RoPEMaskedMultiheadAttention(nn.Module):
         d_head = d_model // n_heads
         self.heads = nn.ModuleList(
             [
-                RoPEMaskedAttentionHead(
-                    d_model, d_head, seq_len, expected_seq_len
-                )
+                RoPEMaskedAttentionHead(d_model, d_head, seq_len, expected_seq_len)
                 for _ in range(n_heads)
             ]
         )

@@ -37,7 +37,9 @@ class Trainer(BaseTrainer):
             metric_funcs = self.metrics["train"]
             self.optimizer.zero_grad()
 
-        with autocast(device_type=self.device, enabled=self.amp):
+        with autocast(
+            device_type=self.device, enabled=self.amp, dtype=self.autocast_dtype
+        ):
             outputs = self.model(**batch)
             batch.update(outputs)
 
@@ -48,6 +50,7 @@ class Trainer(BaseTrainer):
             self.scaler.scale(
                 batch["loss"]
             ).backward()  # sum of all losses is always called loss
+            self.scaler.unscale_(self.optimizer)
             self._clip_grad_norm()
             self.scaler.step(self.optimizer)
             self.scaler.update()

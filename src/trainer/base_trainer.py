@@ -34,6 +34,7 @@ class BaseTrainer:
         skip_oom=True,
         batch_transforms=None,
         amp=False,
+        autocast_dtype="float16",
     ):
         """
         Args:
@@ -61,6 +62,9 @@ class BaseTrainer:
         """
         self.is_train = True
         self.amp = amp
+        self.autocast_dtype = (
+            torch.bfloat16 if autocast_dtype == "bfloat16" else torch.float16
+        )
 
         self.config = config
         self.cfg_trainer = self.config.trainer
@@ -388,7 +392,6 @@ class BaseTrainer:
         config.trainer.max_grad_norm
         """
         if self.config["trainer"].get("max_grad_norm", None) is not None:
-            self.scaler.unscale_(self.optimizer)
             clip_grad_norm_(
                 self.model.parameters(), self.config["trainer"]["max_grad_norm"]
             )
