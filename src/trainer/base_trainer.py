@@ -239,7 +239,9 @@ class BaseTrainer:
                 self.writer.set_step((epoch - 1) * self.epoch_len + batch_idx)
                 self.logger.debug(
                     "Train Epoch: {} {} Loss: {:.6f}".format(
-                        epoch, self._progress(batch_idx), batch["loss"].item() * self.iters_to_accumulate
+                        epoch,
+                        self._progress(batch_idx),
+                        batch["loss"].item() * self.iters_to_accumulate,
                     )
                 )
                 self.writer.add_scalar(

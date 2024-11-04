@@ -8,11 +8,12 @@ from .swish import SwiGLU
 
 
 class RoPEMaskedAttentionHead(nn.Module):
-    def __init__(self, d_model, d_head, seq_len, expected_seq_len):
+    def __init__(self, d_model, d_head, seq_len, expected_seq_len, use_xformers):
         super().__init__()
         self.seq_len = seq_len
         self.d_head = d_head
         self.expected_seq_len = expected_seq_len
+        self.use_xformers = use_xformers
         self.w_q = nn.Linear(d_model, d_head)
         self.w_k = nn.Linear(d_model, d_head)
         self.w_v = nn.Linear(d_model, d_head)
@@ -52,24 +53,31 @@ class RoPEMaskedAttentionHead(nn.Module):
         k[:, ::2, :], k[:, 1::2, :] = k[:, 1::2, :], k[:, 0::2, :]  # x2, x1, x4, x3 ...
         k_rotated += k * self.sin
 
-        # attn_bias = xops.LowerTriangularMask()
-        # out = xops.memory_efficient_attention(
-        #     q_rotated.to(v.dtype), k_rotated.to(v.dtype), v, attn_bias=attn_bias
-        # )
-
-        out = F.scaled_dot_product_attention(q_rotated, k_rotated, v, is_causal=True)
+        if self.use_xformers:
+            out = xops.memory_efficient_attention(
+                q_rotated.to(v.dtype),
+                k_rotated.to(v.dtype),
+                v,
+                attn_bias=xops.LowerTriangularMask(),
+            )
+        else:
+            out = F.scaled_dot_product_attention(
+                q_rotated, k_rotated, v, is_causal=True
+            )
 
         return out
 
 
 class RoPEMaskedMultiheadAttention(nn.Module):
-    def __init__(self, n_heads, d_model, seq_len, expected_seq_len):
+    def __init__(self, n_heads, d_model, seq_len, expected_seq_len, use_xformers):
         super().__init__()
 
         d_head = d_model // n_heads
         self.heads = nn.ModuleList(
             [
-                RoPEMaskedAttentionHead(d_model, d_head, seq_len, expected_seq_len)
+                RoPEMaskedAttentionHead(
+                    d_model, d_head, seq_len, expected_seq_len, use_xformers
+                )
                 for _ in range(n_heads)
             ]
         )
@@ -84,12 +92,14 @@ class RoPEMaskedMultiheadAttention(nn.Module):
 
 
 class LlamaBlock(nn.Module):
-    def __init__(self, n_heads, d_model, seq_len, inter_dim, expected_seq_len):
+    def __init__(
+        self, n_heads, d_model, seq_len, inter_dim, expected_seq_len, use_xformers
+    ):
         super().__init__()
 
         self.rms = nn.RMSNorm([seq_len, d_model])
         self.attention = RoPEMaskedMultiheadAttention(
-            n_heads, d_model, seq_len, expected_seq_len
+            n_heads, d_model, seq_len, expected_seq_len, use_xformers
         )
 
         self.feedforward = nn.Sequential(

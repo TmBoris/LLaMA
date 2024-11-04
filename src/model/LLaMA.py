@@ -14,6 +14,7 @@ class LLaMA(nn.Module):
         inter_dim,
         n_layers,
         expected_seq_len,
+        use_xformers,
     ):
         super().__init__()
 
@@ -21,7 +22,9 @@ class LLaMA(nn.Module):
 
         self.blocks = nn.ModuleList(
             [
-                LlamaBlock(n_heads, d_model, seq_len, inter_dim, expected_seq_len)
+                LlamaBlock(
+                    n_heads, d_model, seq_len, inter_dim, expected_seq_len, use_xformers
+                )
                 for _ in range(n_layers)
             ]
         )
