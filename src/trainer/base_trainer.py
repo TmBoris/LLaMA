@@ -77,7 +77,8 @@ class BaseTrainer:
         self.logger = logger
         self.log_step = config.trainer.get("log_step", 50)
 
-        self.model = nn.DataParallel(model)
+        # self.model = nn.DataParallel(model)
+        self.model = torch.compile(model)
         self.criterion = criterion
         self.optimizer = optimizer
         self.lr_scheduler = lr_scheduler
