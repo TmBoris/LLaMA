@@ -1,7 +1,7 @@
 import torch
 from torch import nn
 
-from .llama_layers.llama_block import LlamaBlock
+from .llama_block import LlamaBlock
 
 
 class LLaMA(nn.Module):
