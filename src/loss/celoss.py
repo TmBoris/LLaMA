@@ -8,7 +8,7 @@ class CELoss(nn.Module):
     Example of a loss function to use.
     """
 
-    def __init__(self, vocab_size, seq_len):
+    def __init__(self, vocab_size):
         super().__init__()
         self.vocab_size = vocab_size
 

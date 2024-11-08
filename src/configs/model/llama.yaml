@@ -2,7 +2,7 @@ _target_: src.model.LLaMA
 vocab_size: ${loss_function.vocab_size}
 d_model: 768
 n_heads: 16
-seq_len: ${loss_function.seq_len}
+seq_len: 256 # train seq_len
 expected_seq_len: 256 # set to 1024 for ft
 inter_dim: 1024
 n_layers: 16
