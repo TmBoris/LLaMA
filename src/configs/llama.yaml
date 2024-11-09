@@ -24,6 +24,7 @@ trainer:
   n_epochs: 101
   epoch_len: 1000
   iters_to_accumulate: 16
+  seqs_from_sample: 16
   device_tensors: ["texts"] # which tensors should be on device (ex. GPU)
   resume_from: null # null or path to the checkpoint dir with *.pth and config.yaml
   device: auto # device name or "auto"

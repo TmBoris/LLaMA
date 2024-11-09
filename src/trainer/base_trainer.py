@@ -566,13 +566,15 @@ class BaseTrainer:
         checkpoint = torch.load(pretrained_path, self.device)
 
         if checkpoint.get("state_dict") is not None:
-            new_state_dict = OrderedDict()
-            for k, v in checkpoint["state_dict"].items():
-                if 'rms.weight' in k:
-                    v = torch.randn(v.shape[-1], device=v.device)
-                elif 'sin' in k or 'cos' in k:
-                    v = torch.randn([1020, 48], device=v.device)
-                new_state_dict[k] = v
-            self.model.load_state_dict(new_state_dict)
+            # new_state_dict = OrderedDict()
+            # for k, v in checkpoint["state_dict"].items():
+            #     if 'rms.weight' in k:
+            #         v = torch.randn(v.shape[-1], device=v.device)
+            #     elif 'sin' in k or 'cos' in k:
+            #         v = torch.randn([1020, 48], device=v.device)
+            #     new_state_dict[k] = v
+            # self.model.load_state_dict(new_state_dict)
+            self.model.load_state_dict(checkpoint["state_dict"])
+
         else:
             self.model.load_state_dict(checkpoint)

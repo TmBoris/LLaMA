@@ -12,7 +12,8 @@ class LLaMA_config(PretrainedConfig):
         d_model=768,
         n_heads=16,
         seq_len=256, # train seq_len
-        expected_seq_len=1024, # set to 1024 for ft
+        max_seq_len=1024, # set to 1024 for ft
+        n_ropes=3300,
         inter_dim=1024,
         n_layers=16,
         use_xformers=False,
@@ -22,7 +23,8 @@ class LLaMA_config(PretrainedConfig):
         self.d_model = d_model
         self.n_heads = n_heads
         self.seq_len = seq_len
-        self.expected_seq_len = expected_seq_len
+        self.max_seq_len = max_seq_len
+        self.n_ropes = n_ropes
         self.inter_dim = inter_dim
         self.n_layers = n_layers
         self.use_xformers = use_xformers

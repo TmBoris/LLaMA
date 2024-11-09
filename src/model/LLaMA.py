@@ -10,10 +10,11 @@ class LLaMA(nn.Module):
         vocab_size,
         d_model,
         n_heads,
-        pre_train_seq_len,
+        n_ropes,
+        rope_coef,
         inter_dim,
         n_layers,
-        expected_seq_len,
+        max_seq_len,
         use_xformers,
     ):
         super().__init__()
@@ -23,7 +24,7 @@ class LLaMA(nn.Module):
         self.blocks = nn.ModuleList(
             [
                 LlamaBlock(
-                    n_heads, d_model, pre_train_seq_len, inter_dim, expected_seq_len, use_xformers
+                    n_heads, d_model, inter_dim, n_ropes, use_xformers, rope_coef
                 )
                 for _ in range(n_layers)
             ]

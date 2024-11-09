@@ -79,7 +79,7 @@ def get_dataloaders(config, device):
         partition_dataloader = instantiate(
             config.dataloader,
             dataset=dataset,
-            collate_fn=lambda batch: collate_fn(batch, config.model.expected_seq_len),
+            collate_fn=lambda batch: collate_fn(batch, config.model.max_seq_len, config.trainer.seqs_from_sample),
             drop_last=(dataset_partition == "train"),
             shuffle=(dataset_partition == "train"),
             worker_init_fn=set_worker_seed,
