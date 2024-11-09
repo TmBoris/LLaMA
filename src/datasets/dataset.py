@@ -18,7 +18,7 @@ class Dataset(BaseDataset):
         self.n_save = n_save
         data_dir = ROOT_PATH / "data" / "datasets" / dir
         self._data_dir = data_dir
-        self.tokenizer = AutoTokenizer.from_pretrained("mistralai/Mistral-7B-v0.1")
+        self.tokenizer = torch.load('data/tokenizer/mistral_tokenizer.pt')
 
         dataset = self._get_or_load_index("train")
         super().__init__(dataset, *args, **kwargs)

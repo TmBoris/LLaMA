@@ -127,7 +127,7 @@ class BaseTrainer:
 
         # setup visualization writer instance
         self.writer = writer
-        self.tokenizer = AutoTokenizer.from_pretrained("mistralai/Mistral-7B-v0.1")
+        self.tokenizer = torch.load('data/tokenizer/mistral_tokenizer.pt')
 
         # define metrics
         self.metrics = metrics
