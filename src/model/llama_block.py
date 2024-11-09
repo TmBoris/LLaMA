@@ -1,7 +1,7 @@
 import numpy as np
 import torch
 import torch.nn.functional as F
-import xformers.ops as xops
+# import xformers.ops as xops
 from torch import nn
 
 from .swish import SwiGLU
@@ -56,12 +56,13 @@ class RoPEMaskedAttentionHead(nn.Module):
         k_rotated += k * self.sin[:q.shape[1]]
 
         if self.use_xformers:
-            out = xops.memory_efficient_attention(
-                q_rotated.to(v.dtype),
-                k_rotated.to(v.dtype),
-                v,
-                attn_bias=xops.LowerTriangularMask(),
-            )
+            # out = xops.memory_efficient_attention(
+            #     q_rotated.to(v.dtype),
+            #     k_rotated.to(v.dtype),
+            #     v,
+            #     attn_bias=xops.LowerTriangularMask(),
+            # )
+            pass
         else:
             out = F.scaled_dot_product_attention(
                 q_rotated, k_rotated, v, is_causal=True
