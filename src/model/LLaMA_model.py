@@ -14,7 +14,7 @@ class LLaMA_model(PreTrainedModel):
             vocab_size=config.vocab_size,
             d_model=config.d_model,
             n_heads=config.n_heads,
-            seq_len=config.seq_len,
+            pre_train_seq_len=config.seq_len,
             expected_seq_len=config.expected_seq_len,
             inter_dim=config.inter_dim,
             n_layers=config.n_layers,

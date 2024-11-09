@@ -7,6 +7,7 @@ from torch import GradScaler, nn
 from torch.nn.utils import clip_grad_norm_
 from tqdm.auto import tqdm
 from transformers import AutoTokenizer
+from collections import OrderedDict
 
 from src.datasets.data_utils import inf_loop
 from src.metrics.tracker import MetricTracker
@@ -565,6 +566,13 @@ class BaseTrainer:
         checkpoint = torch.load(pretrained_path, self.device)
 
         if checkpoint.get("state_dict") is not None:
-            self.model.load_state_dict(checkpoint["state_dict"])
+            new_state_dict = OrderedDict()
+            for k, v in checkpoint["state_dict"].items():
+                if 'rms.weight' in k:
+                    v = torch.randn(v.shape[-1], device=v.device)
+                elif 'sin' in k or 'cos' in k:
+                    v = torch.randn([1020, 48], device=v.device)
+                new_state_dict[k] = v
+            self.model.load_state_dict(new_state_dict)
         else:
             self.model.load_state_dict(checkpoint)

@@ -10,7 +10,7 @@ class LLaMA(nn.Module):
         vocab_size,
         d_model,
         n_heads,
-        seq_len,
+        pre_train_seq_len,
         inter_dim,
         n_layers,
         expected_seq_len,
@@ -23,13 +23,13 @@ class LLaMA(nn.Module):
         self.blocks = nn.ModuleList(
             [
                 LlamaBlock(
-                    n_heads, d_model, seq_len, inter_dim, expected_seq_len, use_xformers
+                    n_heads, d_model, pre_train_seq_len, inter_dim, expected_seq_len, use_xformers
                 )
                 for _ in range(n_layers)
             ]
         )
 
-        self.rms = nn.RMSNorm([seq_len, d_model])
+        self.rms = nn.RMSNorm([d_model])
         self.linear = nn.Linear(d_model, vocab_size)
 
         print("model initialized")
