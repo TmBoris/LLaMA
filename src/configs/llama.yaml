@@ -11,7 +11,7 @@ optimizer:
   lr: 3e-4
 lr_scheduler:
   _target_: torch.optim.lr_scheduler.OneCycleLR
-  max_lr: 6e-4
+  max_lr: 1e-4
   pct_start: 0.1
   anneal_strategy: 'cos'
   steps_per_epoch: ${trainer.epoch_len}
@@ -35,5 +35,5 @@ trainer:
   save_dir: "saved"
   max_grad_norm: 3
   seed: 1
-  amp: True
+  amp: False
   autocast_dtype: bfloat16

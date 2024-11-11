@@ -7,4 +7,4 @@ rope_coef: 0.25
 inter_dim: 1024
 n_layers: 16
 max_seq_len: 1024 # set to 1024 for ft
-use_xformers: True
+use_xformers: False

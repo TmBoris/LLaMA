@@ -1,14 +1,14 @@
 import gc
 from abc import abstractmethod
+from collections import OrderedDict
 
-import torch
 import numpy as np
+import torch
 from numpy import inf
 from torch import GradScaler, nn
 from torch.nn.utils import clip_grad_norm_
 from tqdm.auto import tqdm
 from transformers import AutoTokenizer
-from collections import OrderedDict
 
 from src.datasets.data_utils import inf_loop
 from src.metrics.tracker import MetricTracker
@@ -128,7 +128,7 @@ class BaseTrainer:
 
         # setup visualization writer instance
         self.writer = writer
-        self.tokenizer = torch.load('data/tokenizer/mistral_tokenizer.pt')
+        self.tokenizer = torch.load("data/tokenizer/mistral_tokenizer.pt")
 
         # define metrics
         self.metrics = metrics
@@ -548,21 +548,6 @@ class BaseTrainer:
             f"Checkpoint loaded. Resume training from epoch {self.start_epoch}"
         )
 
-    def _get_rotary_vectors(self, n_ropes, d_head, rope_coef, device):
-        sin = torch.zeros((n_ropes, d_head), device=device)
-        cos = torch.zeros((n_ropes, d_head), device=device)
-
-        for position in range(n_ropes):
-            for i in range(d_head // 2):
-                theta = 10000.0 ** (-2.0 * (i - 1) / d_head)
-                m_theta = position * theta * rope_coef
-                cos[position, 2 * i] = np.cos(m_theta)
-                cos[position, 2 * i + 1] = np.cos(m_theta)
-                sin[position, 2 * i] = -np.sin(m_theta)
-                sin[position, 2 * i + 1] = np.cos(m_theta)
-
-        return sin, cos
-
     def _from_pretrained(self, pretrained_path):
         """
         Init model with weights from pretrained pth file.
@@ -582,18 +567,6 @@ class BaseTrainer:
         checkpoint = torch.load(pretrained_path, self.device)
 
         if checkpoint.get("state_dict") is not None:
-            sin, cos = self._get_rotary_vectors(3300, 48, 1/4, self.device)
-            new_state_dict = OrderedDict()
-            for k, v in checkpoint["state_dict"].items():
-                if 'sin' in k:
-                    new_state_dict[k] = sin
-                elif 'cos' in k:
-                    new_state_dict[k] = cos
-                else:
-                    new_state_dict[k] = v
-
-            self.model.load_state_dict(new_state_dict)
-            # self.model.load_state_dict(checkpoint["state_dict"])
-
+            self.model.load_state_dict(checkpoint["state_dict"])
         else:
             self.model.load_state_dict(checkpoint)

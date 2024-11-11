@@ -26,7 +26,9 @@ def collate_fn(dataset_items: list[dict], max_seq_len, seqs_from_sample):
                 torch.stack(
                     [
                         torch.cat((tensor([1]), t, tensor([2])))
-                        for t in x[:(max_seq_len - 1) * seqs_from_sample].view(-1, max_seq_len - 1)
+                        for t in x[: (max_seq_len - 1) * seqs_from_sample].view(
+                            -1, max_seq_len - 1
+                        )
                     ]
                 )
                 for x in dataset_items

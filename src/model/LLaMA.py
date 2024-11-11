@@ -1,24 +1,8 @@
 import torch
+from rmsnorm import RMSNorm
 from torch import nn
 
 from .llama_block import LlamaBlock
-
-
-class ModelAnswer:
-  def __init__(self, logits):
-    self.logits = logits
-
-  def __getattr__(self, name):
-    if name == 'logits':
-      return self.logits
-    else:
-      raise AttributeError(f"Attribute '{name}' not found")
-
-  def __getitem__(self, key):
-    if key == 'logits':
-      return self.logits
-    else:
-      raise KeyError(f"Key '{key}' not found")
 
 
 class LLaMA(nn.Module):
@@ -47,7 +31,7 @@ class LLaMA(nn.Module):
             ]
         )
 
-        self.rms = nn.RMSNorm([d_model])
+        self.rms = RMSNorm(d_model)
         self.linear = nn.Linear(d_model, vocab_size)
 
         print("model initialized")
@@ -62,7 +46,7 @@ class LLaMA(nn.Module):
 
         x = self.linear(self.rms(x))
 
-        return ModelAnswer(x)
+        return {"logits": x}
 
     def __str__(self):
         """

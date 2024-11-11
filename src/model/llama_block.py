@@ -1,6 +1,8 @@
 import numpy as np
 import torch
 import torch.nn.functional as F
+from rmsnorm import RMSNorm
+
 # import xformers.ops as xops
 from torch import nn
 
@@ -47,13 +49,13 @@ class RoPEMaskedAttentionHead(nn.Module):
         k = self.w_k(x)
         v = self.w_v(x)
 
-        q_rotated = q * self.cos[:q.shape[1]]
+        q_rotated = q * self.cos[: q.shape[1]]
         q[:, :, ::2], q[:, :, 1::2] = q[:, :, 1::2], q[:, :, 0::2]  # d2, d1, d4, d3 ...
-        q_rotated += q * self.sin[:q.shape[1]]
+        q_rotated += q * self.sin[: q.shape[1]]
 
-        k_rotated = k * self.cos[:q.shape[1]]
+        k_rotated = k * self.cos[: q.shape[1]]
         k[:, :, ::2], k[:, :, 1::2] = k[:, :, 1::2], k[:, :, 0::2]  # d2, d1, d4, d3 ...
-        k_rotated += k * self.sin[:q.shape[1]]
+        k_rotated += k * self.sin[: q.shape[1]]
 
         if self.use_xformers:
             # out = xops.memory_efficient_attention(
@@ -95,12 +97,10 @@ class RoPEMaskedMultiheadAttention(nn.Module):
 
 
 class LlamaBlock(nn.Module):
-    def __init__(
-        self, n_heads, d_model, inter_dim, n_ropes, use_xformers, rope_coef
-    ):
+    def __init__(self, n_heads, d_model, inter_dim, n_ropes, use_xformers, rope_coef):
         super().__init__()
 
-        self.rms = nn.RMSNorm([d_model])
+        self.rms = RMSNorm(d_model)
         self.attention = RoPEMaskedMultiheadAttention(
             n_heads, d_model, n_ropes, use_xformers, rope_coef
         )

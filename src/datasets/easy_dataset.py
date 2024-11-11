@@ -26,7 +26,7 @@ class EasyDataset(Dataset):
             self.dataset.save_to_disk("data/datasets/small_openwebtext")
         self.dataset = self.dataset["train"]
         self.limit = limit if limit is not None else len(self.dataset)
-        self.tokenizer = torch.load('data/tokenizer/mistral_tokenizer.pt')
+        self.tokenizer = torch.load("data/tokenizer/mistral_tokenizer.pt")
 
     def __getitem__(self, ind):
         """

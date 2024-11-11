@@ -112,3 +112,8 @@ outputs/
 .vscode/
 .idea/
 __MACOSX/
+
+
+playground.ipynb
+starter.ipynb
+starter2.ipynb
