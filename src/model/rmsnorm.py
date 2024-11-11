@@ -10,4 +10,4 @@ class RMSNorm(nn.Module):
         self.register_parameter("scale", scale)
 
     def forward(self, x):
-        return self.scale * x / (torch.norm(x, 2, dim=-1, keepdim=True) ** (-1. / 2))
+        return self.scale * x / (torch.norm(x, 2, dim=-1, keepdim=True) ** (-1.0 / 2))

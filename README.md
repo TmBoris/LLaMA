@@ -52,7 +52,7 @@ The model training contains of 2 stages. To reproduce results, train model using
    model.rope_coef=1 model.max_seq_len=256 lr_scheduler.max_lr=5e-4
    ```
 
-2. Train 10 epochs as fine-tune on 104 len sequences
+2. Train 10 epochs as fine-tune on 1024 len sequences
 
    ```bash
    python train.py writer.run_name="part2" dataloader.batch_size=3 trainer.seqs_from_sample=3
@@ -67,8 +67,8 @@ This results were obtained using argmax and language model:
 
 
 ```angular2html
-            RTI     
-tinyMMLU    0.31
+            RTI
+tinyMMLU    0.304
 ```
 
 
