@@ -4,6 +4,23 @@ from torch import nn
 from .llama_block import LlamaBlock
 
 
+class ModelAnswer:
+  def __init__(self, logits):
+    self.logits = logits
+
+  def __getattr__(self, name):
+    if name == 'logits':
+      return self.logits
+    else:
+      raise AttributeError(f"Attribute '{name}' not found")
+
+  def __getitem__(self, key):
+    if key == 'logits':
+      return self.logits
+    else:
+      raise KeyError(f"Key '{key}' not found")
+
+
 class LLaMA(nn.Module):
     def __init__(
         self,
@@ -45,7 +62,7 @@ class LLaMA(nn.Module):
 
         x = self.linear(self.rms(x))
 
-        return {"logits": x}
+        return ModelAnswer(x)
 
     def __str__(self):
         """
