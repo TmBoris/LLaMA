@@ -14,11 +14,11 @@ class LLaMA_model(PreTrainedModel):
             vocab_size=config.vocab_size,
             d_model=config.d_model,
             n_heads=config.n_heads,
-            pre_train_seq_len=config.seq_len,
-            max_seq_len=config.max_seq_len,
             n_ropes=config.n_ropes,
+            rope_coef=config.rope_coef,
             inter_dim=config.inter_dim,
             n_layers=config.n_layers,
+            max_seq_len=config.max_seq_len,
             use_xformers=config.use_xformers,
         )
 
